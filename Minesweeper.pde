@@ -3,13 +3,13 @@ import de.bezier.guido.*;
 public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
 public final static int NUM_BOMBS = 10;
-private int NUM_LEFT = NUM_ROWS * NUM_COLS - NUM_BOMBS;
+private boolean firstClick = true;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> bombs = new ArrayList<MSButton>(); //ArrayList of just the minesweeper buttons that are mined
 
 void setup ()
 {
-    size(400, 400);
+    size(400, 500);
     textAlign(CENTER,CENTER);
     
     // make the manager
@@ -22,7 +22,7 @@ void setup ()
       for(int col = 0; col < NUM_COLS; col++)
           buttons[row][col] = new MSButton(row, col);
     
-    setBombs();
+    //setBombs();
 }
 public void setBombs() {
     for(int num = 0; num < NUM_BOMBS; num++) {
@@ -37,17 +37,19 @@ public void draw ()
 {
     background( 0 );
     if( isWon() ) 
-            displayWinningMessage();
+        displayWinningMessage();
 }
 public boolean isWon()
 {
-    if ( NUM_LEFT > 0 )
-        return false;
+    for(int row = 0; row < NUM_ROWS; row++)
+        for(int col = 0; col < NUM_COLS; col++)
+            if ( !bombs.contains(buttons[row][col]) && !buttons[row][col].isClicked() )
+                return false;
     return true;
 }
 public void displayLosingMessage()
 {
-     println("lose");
+    println("lose");
 }
 public void displayWinningMessage()
 {
@@ -89,6 +91,10 @@ public class MSButton
     
     public void mousePressed () 
     {
+        if ( firstClick ) {
+            setBombs();
+            firstClick = false;
+        }
         clicked = true;
         if ( mouseButton == RIGHT && marked == false ) {
             marked = true; }
@@ -96,9 +102,8 @@ public class MSButton
             marked = clicked = false; }
         else if ( bombs.contains( this ) && marked == false ) { 
             displayLosingMessage(); }
-        else if ( countBombs( r, c ) > 0 ) { 
+        else if ( countBombs( r, c ) > 0 ) 
             setLabel( ""+countBombs( r, c ) ); 
-            NUM_LEFT--; }
         else if ( countBombs( r, c ) == 0 ) { 
             for ( int row = r-1; row <= r+1; row++ )
                 for ( int col = c-1; col <= c+1; col++ ) {
@@ -106,9 +111,7 @@ public class MSButton
                         buttons[row][col].mousePressed(); 
                     } 
                 }
-            NUM_LEFT--;
         }
-        System.out.println(NUM_LEFT);
        
     }
 
