@@ -9,7 +9,7 @@ private ArrayList <MSButton> bombs = new ArrayList<MSButton>(); //ArrayList of j
 
 void setup ()
 {
-    size(400, 500);
+    size(400, 400);
     textAlign(CENTER,CENTER);
     
     // make the manager
@@ -49,7 +49,12 @@ public boolean isWon()
 }
 public void displayLosingMessage()
 {
-    println("lose");
+    String lose = " YOU LOSE ";
+    for(int row = 0; row < NUM_ROWS; row++)
+        for(int col = 0; col < NUM_COLS; col++)
+            buttons[row][col].setMarked( true ); 
+    for(int col = 0; col < NUM_COLS; col++)
+        buttons[9][col].setLabel( lose.substring(col, col+1) ); 
 }
 public void displayWinningMessage()
 {
