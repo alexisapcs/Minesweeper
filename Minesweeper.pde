@@ -49,12 +49,18 @@ public boolean isWon()
 }
 public void displayLosingMessage()
 {
-    String lose = " YOU LOSE ";
+    String lose = "  YOU ARE A LOSER!  ";
+    
     for(int row = 0; row < NUM_ROWS; row++)
-        for(int col = 0; col < NUM_COLS; col++)
+        for(int col = 0; col < NUM_COLS; col++){
+            buttons[row][col].setLabel(" ");
             buttons[row][col].setMarked( true ); 
-    for(int col = 0; col < NUM_COLS; col++)
+        }
+    
+    for(int col = 0; col < NUM_COLS; col++) {
+        buttons[9][col].setEndColor(true);
         buttons[9][col].setLabel( lose.substring(col, col+1) ); 
+    }
 }
 public void displayWinningMessage()
 {
@@ -69,7 +75,7 @@ public class MSButton
 {
     private int r, c;
     private float x,y, width, height;
-    private boolean clicked, marked;
+    private boolean clicked, marked, endColor;
     private String label;
     
     public MSButton ( int rr, int cc )
@@ -81,17 +87,12 @@ public class MSButton
         x = c*width;
         y = r*height;
         label = "";
-        marked = clicked = false;
+        marked = clicked = endColor = false;
         Interactive.add( this ); // register it with the manager
     }
-    public boolean isMarked()
-    {
-        return marked;
-    }
-    public boolean isClicked()
-    {
-        return clicked;
-    }
+    public boolean isMarked(){return marked;}
+    public boolean isClicked(){return clicked;}
+    public void setEndColor(boolean yeh){endColor = yeh;}
     // called by manager
     
     public void mousePressed () 
@@ -133,6 +134,26 @@ public class MSButton
 
         rect(x, y, width, height, 3);
         fill(0);
+        if( countBombs( r, c ) == 1 )
+            fill(0, 0, 255);
+        else if ( countBombs( r, c ) == 2 )
+            fill(0, 127, 46);
+        else if ( countBombs( r, c ) == 3 )
+            fill(255, 0, 0);
+        else if ( countBombs( r, c ) == 4 )
+            fill(1, 4, 84);
+        else if ( countBombs( r, c ) == 5 )
+            fill(84, 0, 0);
+        else if ( countBombs( r, c ) == 6 )
+            fill(178, 255, 251);
+        else if ( countBombs( r, c ) == 7 )
+            fill(0);
+        else if ( countBombs( r, c ) == 8 )
+            fill(91);
+        else if (endColor)
+            fill(255); 
+        else
+            fill(0);
         text(label,x+width/2,y+height/2);
     }
     public void setLabel(String newLabel){label = newLabel;}
