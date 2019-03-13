@@ -2,15 +2,19 @@ import de.bezier.guido.*;
 
 public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
-public final static int NUM_BOMBS = 40;
+public final static int NUM_BOMBS = 15;
+public final static int TEXT_SIZE = 12;
 private boolean firstClick = true;
 private boolean endGame = false;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> bombs = new ArrayList<MSButton>(); //ArrayList of just the minesweeper buttons that are mined
+public PFont myFont;
 
 void setup ()
 {
+    myFont = createFont("Monospaced.bold", TEXT_SIZE);
     size(400, 400);
+    textFont(myFont);
     textAlign(CENTER,CENTER);
     
     // make the manager
@@ -56,13 +60,13 @@ public void displayLosingMessage()
         for(int col = 0; col < NUM_COLS; col++){
             buttons[row][col].setLabel(" ");
             if ( !bombs.contains( buttons[row][col] ) )
-                buttons[row][col].setMarked( true ); 
+                buttons[row][col].setDark( true ); 
             else 
                 buttons[row][col].setClicked( true );
         }
     
     for(int col = 0; col < NUM_COLS; col++) {
-        buttons[9][col].setMarked( true );
+        buttons[9][col].setDark( true );
         buttons[9][col].setEndColor(true);
         buttons[9][col].setLabel( lose.substring(col, col+1) ); 
     }
@@ -78,10 +82,12 @@ public void displayWinningMessage()
     for(int row = 0; row < NUM_ROWS; row++)
         for(int col = 0; col < NUM_COLS; col++){
             buttons[row][col].setLabel(" ");
-            buttons[row][col].setMarked( true ); 
+            buttons[row][col].setDark( true ); 
         }
     
     for(int col = 0; col < NUM_COLS; col++) {
+        buttons[0][col].setColor(true);
+        buttons[19][col].setColor(true); 
         buttons[9][col].setEndColor(true);
         buttons[9][col].setLabel( win.substring(col, col+1) ); 
     }
@@ -91,7 +97,7 @@ public class MSButton
 {
     private int r, c;
     private float x,y, width, height;
-    private boolean clicked, marked, endColor;
+    private boolean clicked, marked, dark, coloring, endColor;
     private String label;
     
     public MSButton ( int rr, int cc )
@@ -103,7 +109,7 @@ public class MSButton
         x = c*width;
         y = r*height;
         label = "";
-        marked = clicked = endColor = false;
+        marked = clicked = dark = endColor = coloring = false;
         Interactive.add( this ); // register it with the manager
     }
     public boolean isMarked(){return marked;}
@@ -144,11 +150,15 @@ public class MSButton
     }
 
     public void draw () 
-    {    
-        if (marked)
+    {   
+        if ( coloring ) 
+            fill((int)x, 66, 255); 
+        else if ( dark )
             fill(0);
+        else if ( marked )
+            fill(255, 190, 66);
         else if( clicked && bombs.contains(this) ) 
-            fill(255,0,0);
+            fill(255, (int)x-100, 66);
         else if( clicked )
             fill( 200 );
         else 
@@ -160,7 +170,7 @@ public class MSButton
             if ( isWon() )
                 fill((int)x, 66, 255); 
             else 
-                fill(255, (int)x, 66);
+                fill(255, (int)x-100, 66);
         else if( countBombs( r, c ) == 1 )
             fill(0, 0, 255);
         else if ( countBombs( r, c ) == 2 )
@@ -179,11 +189,13 @@ public class MSButton
             fill(91);
         else
             fill(0);
-        text(label,x+width/2,y+height/2);
+        text(label,x+width/2,y+height/2 - 2);
     }
     public void setLabel(String newLabel){label = newLabel;}
     public void setMarked(boolean mark){marked = mark;}
     public void setClicked(boolean click){clicked = click;}
+    public void setDark(boolean darken){dark = darken;}
+    public void setColor(boolean colors){coloring = colors;}
     public boolean isValid(int r, int c)
     {
         for ( int row = 0; row < NUM_ROWS; row++ )
