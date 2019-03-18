@@ -2,7 +2,7 @@ import de.bezier.guido.*;
 
 public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
-public final static int NUM_BOMBS = 15;
+public final static int NUM_BOMBS = 40;
 public final static int TEXT_SIZE = 12;
 private boolean firstClick = true;
 private boolean endGame = false;
@@ -189,7 +189,7 @@ public class MSButton
             fill(91);
         else
             fill(0);
-        text(label,x+width/2,y+height/2 - 2);
+        text(label,x+width/2,y+height/2);
     }
     public void setLabel(String newLabel){label = newLabel;}
     public void setMarked(boolean mark){marked = mark;}
